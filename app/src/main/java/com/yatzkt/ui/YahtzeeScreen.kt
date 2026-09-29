@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,8 +41,6 @@ fun YahtzeeScreen(viewModel: YahtzeeViewModel = viewModel(), modifier: Modifier 
   val uiState by viewModel.uiState.collectAsState()
   val gameState = uiState.gameState
   val context = LocalContext.current
-  val scrollState = rememberScrollState()
-
   Scaffold(
     topBar = {
       TopAppBar(
@@ -87,27 +83,24 @@ fun YahtzeeScreen(viewModel: YahtzeeViewModel = viewModel(), modifier: Modifier 
     modifier = modifier.fillMaxSize(),
   ) { innerPadding ->
     Column(
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+      verticalArrangement = Arrangement.spacedBy(10.dp),
       modifier =
-        Modifier.fillMaxSize().padding(innerPadding).verticalScroll(scrollState).padding(16.dp),
+        Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-      // Scorecard
-      ScorecardView(
-        scorecard = gameState.scorecard,
-        potentialScores = gameState.potentialScores,
-        canSelectCategory = gameState.canSelectCategory && !uiState.isRollingAnimationActive,
-        onCategoryClick = { category -> viewModel.onCategorySelect(category) },
-      )
-
-      // Game Over Card (inline prompt at the bottom as requested)
       if (gameState.isGameOver) {
         GameOverCard(
           scorecard = gameState.scorecard,
           onPlayAgainClick = { viewModel.onResetGame() },
         )
+      } else {
+        ScorecardView(
+          scorecard = gameState.scorecard,
+          potentialScores = gameState.potentialScores,
+          canSelectCategory = gameState.canSelectCategory && !uiState.isRollingAnimationActive,
+          onCategoryClick = { category -> viewModel.onCategorySelect(category) },
+          modifier = Modifier.fillMaxWidth(),
+        )
       }
-
-      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
