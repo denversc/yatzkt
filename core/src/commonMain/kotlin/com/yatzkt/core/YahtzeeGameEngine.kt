@@ -23,7 +23,7 @@ class YahtzeeGameEngine(private val diceRoller: DiceRoller = RandomDiceRoller())
         current.dice.map { die -> if (die.isHeld) die else die.copy(value = diceRoller.roll()) }
 
       val newRollsRemaining = current.rollsRemaining - 1
-      val diceValues = updatedDice.map { it.value }
+      val diceValues = updatedDice.mapNotNull { it.value }
 
       val previews =
         YahtzeeCategory.entries
@@ -68,12 +68,12 @@ class YahtzeeGameEngine(private val diceRoller: DiceRoller = RandomDiceRoller())
         return@update current
       }
 
-      val diceValues = current.dice.map { it.value }
+      val diceValues = current.dice.mapNotNull { it.value }
       val score = YahtzeeScorer.calculateScore(category, diceValues)
       val updatedScorecard = current.scorecard.withScore(category, score)
 
-      // Reset dice for the next turn: unheld and default value
-      val resetDice = current.dice.map { it.copy(isHeld = false) }
+      // Reset dice for the next turn: unheld and blank before rolled
+      val resetDice = List(5) { Die(value = null, isHeld = false) }
       val nextRound = (updatedScorecard.completedRoundsCount + 1).coerceAtMost(current.totalRounds)
 
       didSelect = true

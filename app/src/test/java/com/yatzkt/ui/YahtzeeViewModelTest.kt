@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -38,6 +39,8 @@ class YahtzeeViewModelTest {
     assertEquals(1, state.gameState.currentRound)
     assertEquals(3, state.gameState.rollsRemaining)
     assertEquals(5, state.displayDice.size)
+    // All dice should be blank (value == null) before the first roll
+    assertTrue(state.displayDice.all { it.value == null })
     assertFalse(state.isRollingAnimationActive)
     assertFalse(state.gameState.isGameOver)
   }
@@ -64,6 +67,8 @@ class YahtzeeViewModelTest {
     assertEquals(2, updatedState.gameState.currentRound)
     assertEquals(3, updatedState.gameState.rollsRemaining)
     assertEquals(20, updatedState.gameState.scorecard.scoreFor(YahtzeeCategory.FOURS))
+    // Dice for the new turn should be blank until rolled
+    assertTrue(updatedState.displayDice.all { it.value == null })
   }
 
   @Test
@@ -80,5 +85,6 @@ class YahtzeeViewModelTest {
     assertEquals(1, state.gameState.currentRound)
     assertEquals(3, state.gameState.rollsRemaining)
     assertFalse(state.gameState.hasRolledThisTurn)
+    assertTrue(state.displayDice.all { it.value == null })
   }
 }

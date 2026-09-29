@@ -2,9 +2,11 @@ package com.yatzkt.core
 
 import kotlin.random.Random
 
-data class Die(val value: Int = 1, val isHeld: Boolean = false) {
+data class Die(val value: Int? = null, val isHeld: Boolean = false) {
   init {
-    require(value in 1..6) { "Die value must be between 1 and 6, but was $value" }
+    require(value == null || value in 1..6) {
+      "Die value must be between 1 and 6 or null when unrolled, but was $value"
+    }
   }
 }
 

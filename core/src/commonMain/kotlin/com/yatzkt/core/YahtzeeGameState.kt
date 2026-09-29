@@ -3,7 +3,7 @@ package com.yatzkt.core
 data class YahtzeeGameState(
   val currentRound: Int = 1,
   val rollsRemaining: Int = 3,
-  val dice: List<Die> = List(5) { Die(value = 1, isHeld = false) },
+  val dice: List<Die> = List(5) { Die(value = null, isHeld = false) },
   val scorecard: Scorecard = Scorecard(),
   val potentialScores: Map<YahtzeeCategory, Int> = emptyMap(),
 ) {

@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +29,8 @@ import com.yatzkt.core.Die
 @Composable
 fun DieView(die: Die, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
   val shape = RoundedCornerShape(12.dp)
+  val isBlank = die.value == null
+
   val cardColors =
     if (die.isHeld) {
       CardDefaults.cardColors(
@@ -43,14 +47,23 @@ fun DieView(die: Die, onClick: () -> Unit, modifier: Modifier = Modifier, enable
   val borderStroke =
     if (die.isHeld) {
       BorderStroke(2.5.dp, MaterialTheme.colorScheme.primary)
+    } else if (isBlank) {
+      BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     } else {
       BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+    }
+
+  val accessibilityDescription =
+    if (isBlank) {
+      "Unrolled die"
+    } else {
+      "Die showing ${die.value}${if (die.isHeld) ", held" else ""}"
     }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(4.dp),
-    modifier = modifier,
+    modifier = modifier.semantics { contentDescription = accessibilityDescription },
   ) {
     Card(
       shape = shape,
@@ -60,16 +73,19 @@ fun DieView(die: Die, onClick: () -> Unit, modifier: Modifier = Modifier, enable
       modifier = Modifier.size(58.dp).clickable(enabled = enabled, onClick = onClick),
     ) {
       Box(contentAlignment = Alignment.Center, modifier = Modifier.size(58.dp)) {
-        DieFace(
-          value = die.value,
-          pipColor =
-            if (die.isHeld) {
-              MaterialTheme.colorScheme.primary
-            } else {
-              MaterialTheme.colorScheme.onSurfaceVariant
-            },
-          modifier = Modifier.size(44.dp),
-        )
+        val value = die.value
+        if (value != null) {
+          DieFace(
+            value = value,
+            pipColor =
+              if (die.isHeld) {
+                MaterialTheme.colorScheme.primary
+              } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+              },
+            modifier = Modifier.size(44.dp),
+          )
+        }
       }
     }
 
