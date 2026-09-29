@@ -8,3 +8,6 @@
 /captures/
 build/
 local.properties
+
+# Local agent rules
+.agents/rules/local*
