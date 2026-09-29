@@ -5,4 +5,18 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.compose.compiler) apply false
   alias(libs.plugins.kotlin.serialization) apply false
+  alias(libs.plugins.spotless)
+}
+
+spotless {
+  kotlin {
+    target("**/*.kt")
+    targetExclude("**/build/**")
+    ktfmt().googleStyle()
+  }
+  kotlinGradle {
+    target("**/*.gradle.kts", "**/*.kts")
+    targetExclude("**/build/**")
+    ktfmt().googleStyle()
+  }
 }
