@@ -24,104 +24,91 @@ import com.yatzkt.core.Scorecard
 
 @Composable
 fun GameOverCard(
-    scorecard: Scorecard,
-    onPlayAgainClick: () -> Unit,
-    modifier: Modifier = Modifier
+  scorecard: Scorecard,
+  onPlayAgainClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = modifier.fillMaxWidth()
+  Card(
+    shape = RoundedCornerShape(16.dp),
+    colors =
+      CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+      ),
+    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth().padding(20.dp),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
+      Text(
+        text = "🎉 Game Over! 🎉",
+        style = MaterialTheme.typography.headlineSmall,
+        fontWeight = FontWeight.Bold,
+      )
+
+      Spacer(modifier = Modifier.height(12.dp))
+
+      Text(
+        text = "Final Score",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+      )
+
+      Text(
+        text = "${scorecard.grandTotal}",
+        style =
+          MaterialTheme.typography.displayMedium.copy(
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 48.sp,
+          ),
+        color = MaterialTheme.colorScheme.primary,
+      )
+
+      Spacer(modifier = Modifier.height(8.dp))
+
+      Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(text = "Upper Total", style = MaterialTheme.typography.labelMedium)
+          Text(
+            text = "${scorecard.upperSectionTotal}",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+          )
+          if (scorecard.hasUpperBonus) {
             Text(
-                text = "🎉 Game Over! 🎉",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+              text = "(+35 bonus)",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.tertiary,
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Final Score",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-            )
-
-            Text(
-                text = "${scorecard.grandTotal}",
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 48.sp
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Upper Total",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Text(
-                        text = "${scorecard.upperSectionTotal}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    if (scorecard.hasUpperBonus) {
-                        Text(
-                            text = "(+35 bonus)",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                }
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Lower Total",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Text(
-                        text = "${scorecard.lowerSectionTotal}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Button(
-                onClick = onPlayAgainClick,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            ) {
-                Text(
-                    text = "Play Again",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+          }
         }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text(text = "Lower Total", style = MaterialTheme.typography.labelMedium)
+          Text(
+            text = "${scorecard.lowerSectionTotal}",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+          )
+        }
+      }
+
+      Spacer(modifier = Modifier.height(18.dp))
+
+      Button(
+        onClick = onPlayAgainClick,
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+        modifier = Modifier.fillMaxWidth().height(48.dp),
+      ) {
+        Text(
+          text = "Play Again",
+          style = MaterialTheme.typography.titleMedium,
+          fontWeight = FontWeight.Bold,
+        )
+      }
     }
+  }
 }

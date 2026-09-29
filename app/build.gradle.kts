@@ -5,43 +5,37 @@ plugins {
 }
 
 android {
-    namespace = "com.yatzkt"
-    compileSdk = 37
-    defaultConfig {
-        applicationId = "com.yatzkt"
-        minSdk = 37
-        targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
-    }
+  namespace = "com.yatzkt"
+  compileSdk = 37
+  defaultConfig {
+    applicationId = "com.yatzkt"
+    minSdk = 37
+    targetSdk = 37
+    versionCode = 1
+    versionName = "1.0"
+  }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
+  buildTypes {
+    release {
+      isMinifyEnabled = false
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    buildFeatures {
-      compose = true
-      aidl = false
-      buildConfig = false
-      shaders = false
-    }
+  }
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+  }
+  buildFeatures {
+    compose = true
+    aidl = false
+    buildConfig = false
+    shaders = false
+  }
 
-    packaging {
-      resources {
-        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-      }
-    }
+  packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 }
 
-kotlin {
-    jvmToolchain(25)
-}
+kotlin { jvmToolchain(25) }
 
 dependencies {
   val composeBom = platform(libs.androidx.compose.bom)
@@ -80,4 +74,3 @@ dependencies {
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.espresso.core)
 }
-
