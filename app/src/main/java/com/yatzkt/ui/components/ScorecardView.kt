@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,114 +36,10 @@ fun ScorecardView(
   onCategoryClick: (YahtzeeCategory) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.fillMaxWidth()) {
-    // Upper Section Card
+  Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier.fillMaxWidth()) {
+    // Top Score Dashboard Card
     Card(
-      shape = RoundedCornerShape(16.dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Column(modifier = Modifier.padding(16.dp)) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween,
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          Text(
-            text = "Upper Section",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-          )
-          Text(
-            text = "${scorecard.upperSectionSubtotal} / 63 for +35 bonus",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-        LinearProgressIndicator(
-          progress = { (scorecard.upperSectionSubtotal / 63f).coerceIn(0f, 1f) },
-          modifier = Modifier.fillMaxWidth().height(6.dp),
-          color =
-            if (scorecard.hasUpperBonus) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.secondary,
-          trackColor = MaterialTheme.colorScheme.surfaceVariant,
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-
-        YahtzeeCategory.upperCategories.forEachIndexed { index, category ->
-          CategoryRow(
-            category = category,
-            actualScore = scorecard.scoreFor(category),
-            potentialScore = potentialScores[category],
-            canSelect = canSelectCategory && !scorecard.isCategoryFilled(category),
-            onClick = { onCategoryClick(category) },
-          )
-          if (index < YahtzeeCategory.upperCategories.lastIndex) {
-            HorizontalDivider(
-              color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-              thickness = 0.5.dp,
-            )
-          }
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-        SubtotalRow(label = "Upper Subtotal", value = scorecard.upperSectionSubtotal)
-        SubtotalRow(
-          label = "Bonus (if 63+)",
-          value = scorecard.upperBonusScore,
-          highlight = scorecard.hasUpperBonus,
-        )
-        SubtotalRow(label = "Upper Total", value = scorecard.upperSectionTotal, isTotal = true)
-      }
-    }
-
-    // Lower Section Card
-    Card(
-      shape = RoundedCornerShape(16.dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-          text = "Lower Section",
-          style = MaterialTheme.typography.titleMedium,
-          fontWeight = FontWeight.Bold,
-          color = MaterialTheme.colorScheme.primary,
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        YahtzeeCategory.lowerCategories.forEachIndexed { index, category ->
-          CategoryRow(
-            category = category,
-            actualScore = scorecard.scoreFor(category),
-            potentialScore = potentialScores[category],
-            canSelect = canSelectCategory && !scorecard.isCategoryFilled(category),
-            onClick = { onCategoryClick(category) },
-          )
-          if (index < YahtzeeCategory.lowerCategories.lastIndex) {
-            HorizontalDivider(
-              color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-              thickness = 0.5.dp,
-            )
-          }
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-        SubtotalRow(label = "Lower Total", value = scorecard.lowerSectionTotal, isTotal = true)
-      }
-    }
-
-    // Grand Total Card
-    Card(
-      shape = RoundedCornerShape(16.dp),
+      shape = RoundedCornerShape(14.dp),
       colors =
         CardDefaults.cardColors(
           containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -150,154 +47,300 @@ fun ScorecardView(
         ),
       modifier = Modifier.fillMaxWidth(),
     ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp),
-      ) {
-        Text(
-          text = "Grand Total",
-          style = MaterialTheme.typography.titleLarge,
-          fontWeight = FontWeight.Bold,
+      Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp)) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          // Upper section overview
+          Column {
+            Text(
+              text = "Upper: ${scorecard.upperSectionTotal}",
+              style = MaterialTheme.typography.titleSmall,
+              fontWeight = FontWeight.Bold,
+            )
+            Text(
+              text =
+                "Bonus: ${scorecard.upperSectionSubtotal}/63 (${if (scorecard.hasUpperBonus) "+35 earned!" else "+35"})",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
+            )
+          }
+
+          // Lower section overview
+          Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+              text = "Lower",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
+            )
+            Text(
+              text = "${scorecard.lowerSectionTotal}",
+              style = MaterialTheme.typography.titleMedium,
+              fontWeight = FontWeight.Bold,
+            )
+          }
+
+          // Grand total
+          Column(horizontalAlignment = Alignment.End) {
+            Text(
+              text = "Grand Total",
+              style = MaterialTheme.typography.labelSmall,
+              color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.75f),
+            )
+            Text(
+              text = "${scorecard.grandTotal}",
+              style =
+                MaterialTheme.typography.headlineMedium.copy(
+                  fontWeight = FontWeight.ExtraBold,
+                  fontSize = 28.sp,
+                ),
+              color = MaterialTheme.colorScheme.primary,
+            )
+          }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+        LinearProgressIndicator(
+          progress = { (scorecard.upperSectionSubtotal / 63f).coerceIn(0f, 1f) },
+          modifier = Modifier.fillMaxWidth().height(4.dp),
+          color =
+            if (scorecard.hasUpperBonus) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.secondary,
+          trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
         )
-        Text(
-          text = "${scorecard.grandTotal}",
-          style =
-            MaterialTheme.typography.headlineMedium.copy(
-              fontWeight = FontWeight.ExtraBold,
-              fontSize = 28.sp,
-            ),
-          color = MaterialTheme.colorScheme.primary,
+      }
+    }
+
+    // Headers for the two tile columns
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      Text(
+        text = "UPPER SECTION",
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.weight(1f).padding(start = 4.dp),
+      )
+      Text(
+        text = "LOWER SECTION",
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.weight(1f).padding(start = 4.dp),
+      )
+    }
+
+    // 2-Column Matrix of Scoring Tiles
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+      // Left Column: Upper categories + Bonus Tile
+      Column(verticalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.weight(1f)) {
+        YahtzeeCategory.upperCategories.forEach { category ->
+          val icon =
+            when (category) {
+              YahtzeeCategory.ONES -> "⚀"
+              YahtzeeCategory.TWOS -> "⚁"
+              YahtzeeCategory.THREES -> "⚂"
+              YahtzeeCategory.FOURS -> "⚃"
+              YahtzeeCategory.FIVES -> "⚄"
+              YahtzeeCategory.SIXES -> "⚅"
+              else -> ""
+            }
+
+          ScoreTile(
+            icon = icon,
+            title = category.displayName,
+            actualScore = scorecard.scoreFor(category),
+            potentialScore = potentialScores[category],
+            canSelect = canSelectCategory && !scorecard.isCategoryFilled(category),
+            onClick = { onCategoryClick(category) },
+          )
+        }
+
+        // Bonus Status Tile
+        BonusStatusTile(
+          subtotal = scorecard.upperSectionSubtotal,
+          hasBonus = scorecard.hasUpperBonus,
+          bonusScore = scorecard.upperBonusScore,
         )
+      }
+
+      // Right Column: Lower categories (7 tiles)
+      Column(verticalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.weight(1f)) {
+        YahtzeeCategory.lowerCategories.forEach { category ->
+          val (icon, title) =
+            when (category) {
+              YahtzeeCategory.THREE_OF_A_KIND -> "3×" to "3 of Kind"
+              YahtzeeCategory.FOUR_OF_A_KIND -> "4×" to "4 of Kind"
+              YahtzeeCategory.FULL_HOUSE -> "🏠" to "Full House"
+              YahtzeeCategory.SMALL_STRAIGHT -> "1-4" to "Sm Straight"
+              YahtzeeCategory.LARGE_STRAIGHT -> "1-5" to "Lg Straight"
+              YahtzeeCategory.YAHTZEE -> "★" to "Yahtzee"
+              YahtzeeCategory.CHANCE -> "🎲" to "Chance"
+              else -> "" to category.displayName
+            }
+
+          ScoreTile(
+            icon = icon,
+            title = title,
+            actualScore = scorecard.scoreFor(category),
+            potentialScore = potentialScores[category],
+            canSelect = canSelectCategory && !scorecard.isCategoryFilled(category),
+            onClick = { onCategoryClick(category) },
+          )
+        }
       }
     }
   }
 }
 
 @Composable
-private fun CategoryRow(
-  category: YahtzeeCategory,
+private fun ScoreTile(
+  icon: String,
+  title: String,
   actualScore: Int?,
   potentialScore: Int?,
   canSelect: Boolean,
   onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val isFilled = actualScore != null
-  val rowModifier =
-    if (canSelect) {
-      Modifier.fillMaxWidth()
-        .clickable(onClick = onClick)
-        .padding(vertical = 8.dp, horizontal = 4.dp)
-    } else {
-      Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 4.dp)
-    }
+  val isHighlight = canSelect && potentialScore != null && potentialScore > 0
 
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween,
-    modifier = rowModifier,
+  Surface(
+    shape = RoundedCornerShape(10.dp),
+    color =
+      when {
+        isFilled -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        isHighlight -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+        else -> MaterialTheme.colorScheme.surface
+      },
+    border =
+      BorderStroke(
+        1.dp,
+        when {
+          isHighlight -> MaterialTheme.colorScheme.primary
+          isFilled -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
+          else -> MaterialTheme.colorScheme.outlineVariant
+        },
+      ),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(39.dp)
+        .then(if (canSelect) Modifier.clickable(onClick = onClick) else Modifier),
   ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = category.displayName,
-        style = MaterialTheme.typography.bodyLarge,
-        fontWeight = if (isFilled) FontWeight.SemiBold else FontWeight.Normal,
-        color =
-          if (isFilled) {
-            MaterialTheme.colorScheme.onSurface
-          } else if (canSelect) {
-            MaterialTheme.colorScheme.onSurface
-          } else {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-          },
-      )
-      Text(
-        text = category.description,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-      )
-    }
-
-    when {
-      isFilled -> {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
         Text(
-          text = "$actualScore",
-          style = MaterialTheme.typography.titleMedium,
+          text = icon,
+          fontSize = 13.sp,
           fontWeight = FontWeight.Bold,
-          color = MaterialTheme.colorScheme.onSurface,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+          text = title,
+          style = MaterialTheme.typography.bodySmall,
+          fontWeight = if (isFilled) FontWeight.Bold else FontWeight.Medium,
+          color =
+            if (isFilled) MaterialTheme.colorScheme.onSurface
+            else if (canSelect) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
         )
       }
-      canSelect && potentialScore != null -> {
-        Surface(
-          shape = RoundedCornerShape(8.dp),
-          color =
-            if (potentialScore > 0) {
-              MaterialTheme.colorScheme.primaryContainer
-            } else {
-              MaterialTheme.colorScheme.surfaceVariant
-            },
-          border =
-            BorderStroke(
-              1.dp,
-              if (potentialScore > 0) MaterialTheme.colorScheme.primary
-              else MaterialTheme.colorScheme.outline,
-            ),
-        ) {
+
+      when {
+        isFilled -> {
           Text(
-            text = "+$potentialScore",
-            style =
-              MaterialTheme.typography.labelLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic,
-              ),
-            color =
-              if (potentialScore > 0) {
-                MaterialTheme.colorScheme.onPrimaryContainer
-              } else {
-                MaterialTheme.colorScheme.onSurfaceVariant
-              },
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            text = "$actualScore",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface,
           )
         }
-      }
-      else -> {
-        Text(
-          text = "—",
-          style = MaterialTheme.typography.bodyLarge,
-          color = MaterialTheme.colorScheme.outline,
-        )
+        canSelect && potentialScore != null -> {
+          Surface(
+            shape = RoundedCornerShape(6.dp),
+            color =
+              if (potentialScore > 0) MaterialTheme.colorScheme.primaryContainer
+              else MaterialTheme.colorScheme.surfaceVariant,
+          ) {
+            Text(
+              text = "+$potentialScore",
+              style =
+                MaterialTheme.typography.labelSmall.copy(
+                  fontWeight = FontWeight.Bold,
+                  fontStyle = FontStyle.Italic,
+                ),
+              color =
+                if (potentialScore > 0) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            )
+          }
+        }
+        else -> {
+          Text(
+            text = "—",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.outline,
+          )
+        }
       }
     }
   }
 }
 
 @Composable
-private fun SubtotalRow(
-  label: String,
-  value: Int,
-  isTotal: Boolean = false,
-  highlight: Boolean = false,
+private fun BonusStatusTile(
+  subtotal: Int,
+  hasBonus: Boolean,
+  bonusScore: Int,
+  modifier: Modifier = Modifier,
 ) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween,
-    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp, horizontal = 4.dp),
+  Surface(
+    shape = RoundedCornerShape(10.dp),
+    color =
+      if (hasBonus) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+      else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+    border =
+      BorderStroke(
+        1.dp,
+        if (hasBonus) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+      ),
+    modifier = modifier.fillMaxWidth().height(39.dp),
   ) {
-    Text(
-      text = label,
-      style =
-        if (isTotal) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.bodyMedium,
-      fontWeight = if (isTotal) FontWeight.Bold else FontWeight.Medium,
-      color =
-        if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-    )
-    Text(
-      text = "$value",
-      style =
-        if (isTotal) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyLarge,
-      fontWeight = if (isTotal) FontWeight.ExtraBold else FontWeight.SemiBold,
-      color =
-        if (highlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-    )
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text = "🎁", fontSize = 12.sp)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+          text = if (hasBonus) "Bonus Won!" else "Bonus (63)",
+          style = MaterialTheme.typography.bodySmall,
+          fontWeight = FontWeight.Medium,
+          color =
+            if (hasBonus) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+      Text(
+        text = if (hasBonus) "+$bonusScore" else "${subtotal}/63",
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color =
+          if (hasBonus) MaterialTheme.colorScheme.primary
+          else MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
   }
 }
