@@ -185,25 +185,6 @@ fun YahtzeeScreen(
                 }
             }
 
-            // Prompt helper banner
-            if (!gameState.isGameOver) {
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = when {
-                            gameState.rollsRemaining == 3 -> "Tap 'Roll Dice' to start your turn."
-                            gameState.rollsRemaining > 0 -> "Tap dice to hold them, roll again, or select a category below."
-                            else -> "All rolls used! Choose a category below to score."
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                    )
-                }
-            }
 
             // Scorecard
             ScorecardView(
