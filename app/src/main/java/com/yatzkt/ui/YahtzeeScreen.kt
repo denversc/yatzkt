@@ -1,5 +1,6 @@
 package com.yatzkt.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -14,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -88,6 +88,13 @@ fun YahtzeeScreen(
                 )
             )
         },
+        bottomBar = {
+            DiceControlsBottomPanel(
+                uiState = uiState,
+                onToggleHold = { index -> viewModel.onToggleHold(index, context) },
+                onRollClick = { viewModel.onRollClick(context) }
+            )
+        },
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
@@ -98,94 +105,6 @@ fun YahtzeeScreen(
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            // Dice Control Area Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    // Dice row
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        uiState.displayDice.forEachIndexed { index, die ->
-                            DieView(
-                                die = die,
-                                enabled = gameState.canToggleHold && !uiState.isRollingAnimationActive,
-                                onClick = { viewModel.onToggleHold(index, context) }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Controls row
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column {
-                            Text(
-                                text = "Rolls Remaining",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(top = 2.dp)
-                            ) {
-                                repeat(3) { rollIndex ->
-                                    val isAvailable = rollIndex < gameState.rollsRemaining
-                                    Surface(
-                                        shape = RoundedCornerShape(4.dp),
-                                        color = if (isAvailable) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.surfaceVariant
-                                        },
-                                        modifier = Modifier.size(width = 16.dp, height = 8.dp)
-                                    ) {}
-                                }
-                                Text(
-                                    text = " (${gameState.rollsRemaining})",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-
-                        Button(
-                            onClick = { viewModel.onRollClick(context) },
-                            enabled = gameState.canRoll && !uiState.isRollingAnimationActive,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            ),
-                            modifier = Modifier.height(44.dp)
-                        ) {
-                            Text(
-                                text = if (uiState.isRollingAnimationActive) "Rolling..." else "Roll Dice",
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
-
-
             // Scorecard
             ScorecardView(
                 scorecard = gameState.scorecard,
@@ -203,6 +122,103 @@ fun YahtzeeScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun DiceControlsBottomPanel(
+    uiState: YahtzeeUiState,
+    onToggleHold: (Int) -> Unit,
+    onRollClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val gameState = uiState.gameState
+
+    Surface(
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 3.dp,
+        shadowElevation = 8.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(16.dp)
+        ) {
+            // Dice row
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                uiState.displayDice.forEachIndexed { index, die ->
+                    DieView(
+                        die = die,
+                        enabled = gameState.canToggleHold && !uiState.isRollingAnimationActive,
+                        onClick = { onToggleHold(index) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Controls row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    Text(
+                        text = "Rolls Remaining",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        repeat(3) { rollIndex ->
+                            val isAvailable = rollIndex < gameState.rollsRemaining
+                            Surface(
+                                shape = RoundedCornerShape(4.dp),
+                                color = if (isAvailable) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                },
+                                modifier = Modifier.size(width = 16.dp, height = 8.dp)
+                            ) {}
+                        }
+                        Text(
+                            text = " (${gameState.rollsRemaining})",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = onRollClick,
+                    enabled = gameState.canRoll && !uiState.isRollingAnimationActive,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.height(44.dp)
+                ) {
+                    Text(
+                        text = if (uiState.isRollingAnimationActive) "Rolling..." else "Roll Dice",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }
